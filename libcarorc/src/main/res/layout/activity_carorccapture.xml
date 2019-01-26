@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical" >
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+		android:background="@android:color/background_dark"
+	    android:gravity="center" >
+	    <SurfaceView
+	        android:id="@+id/preview_view"
+	        android:layout_width="match_parent"
+	        android:layout_height="600dp"
+			android:layout_centerInParent="true"
+	        android:layout_gravity="center"/>
+	    <com.laolang.libcarorc.ViewfinderView
+	        android:id="@+id/viewfinder_view"
+	        android:layout_width="200dp"
+	        android:layout_height="400dp"
+			android:layout_centerInParent="true"
+	        android:layout_gravity="center"/>
+
+		<TextView
+			android:id="@+id/textView1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:textSize="18sp"
+            android:layout_alignParentRight="true"
+			android:layout_marginRight="-40dp"
+			android:textColor="@android:color/white"
+			android:rotation="90"
+			android:text="请横向设备拍摄车牌" />
+
+		<ProgressBar
+			android:id="@+id/btn_wait"
+			android:layout_width="70dp"
+			android:layout_height="70dp"
+			android:layout_marginBottom="20dp"
+			android:visibility="gone"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"/>
+
+		<ImageView
+			android:id="@+id/btn_capture"
+			android:layout_width="70dp"
+			android:layout_height="70dp"
+			android:layout_marginBottom="20dp"
+			android:layout_alignParentBottom="true"
+			android:src="@drawable/capture_photo"
+			android:layout_centerHorizontal="true"
+			android:layout_gravity="center" />
+	</RelativeLayout>
+</LinearLayout>
