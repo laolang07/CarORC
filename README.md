@@ -8,6 +8,7 @@
  
  
  ` 
+ 
     public class CarORCTestActivity extends CarORCCaptureActivity {
     
     @Override
@@ -46,7 +47,8 @@
 
     }
 }
-      `
+    
+    `
 ### 4. 测试机效果图
 ![CarORCDemo](http://m.qpic.cn/psb?/V13dxhH52XJVF2/0kIPwJuvdkw6pYGQAk1Gz1*MzhtF0.*jP04oyf6EQQI!/b/dLwAAAAAAAAA&bo=SwG7AgAAAAARB8M!&rf=viewer_4)
 
