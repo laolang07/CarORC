@@ -23,7 +23,7 @@
      */
     @Override
     public int getLayoutId() {
-        return R.layout.activity_carorccapture;
+        return R.layout.activity_carorccapture;//指向新布局是进行方法重写
     }
     
     /**
