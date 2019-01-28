@@ -44,9 +44,8 @@
     @Override
     protected void Scanfinished(boolean iSsuccess, String msg, String result) {
         super.Scanfinished(iSsuccess, msg, result);
-
     }
-}
+    }
     
     `
 ### 4. 测试机效果图
