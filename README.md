@@ -9,17 +9,33 @@
 
 `    
 public class CarORCTestActivity extends CarORCCaptureActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        initCarORCAPI();//初始化API
+        super.onCreate(savedInstanceState);
+    }
 
-     @Override
+    /**
+     * 开始采集图片进行解析
+     * @param msg
+     */
+    @Override
+    protected void StartScaning(String msg) {
+        super.StartScaning(msg);
+    }
 
-     protected void onCreate(Bundle savedInstanceState) {
+    /**
+     * 解析结果
+     * @param iSsuccess
+     * @param msg
+     * @param result
+     */
+    @Override
+    protected void Scanfinished(boolean iSsuccess, String msg, String result) {
+        super.Scanfinished(iSsuccess, msg, result);
 
-         initCarORCAPI();//初始化API
-
-         super.onCreate(savedInstanceState);
-
-     }
- }
+    }
+}
       `
 ### 4. 测试机效果图
 ![CarORCDemo](http://m.qpic.cn/psb?/V13dxhH52XJVF2/0kIPwJuvdkw6pYGQAk1Gz1*MzhtF0.*jP04oyf6EQQI!/b/dLwAAAAAAAAA&bo=SwG7AgAAAAARB8M!&rf=viewer_4)
