@@ -43,8 +43,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CarORCCaptureActivity extends AppCompatActivity implements View.OnClickListener,
         SurfaceHolder.Callback, PictureCallback, AutoFocusCallback {
@@ -64,17 +62,22 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     private Handler mMsgHandler = null;
     private int mCounter = 0;
 
-    //对焦超时为6秒
+    //对焦超时为2秒
     private static final int Timeout = 2;
     private TextView tv = null;
-    private ProgressBar btn_wait ;
+    private ProgressBar btn_wait = null;
+
     @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_carorccapture);
-        tv = findViewById(R.id.textView1);
-        btn_wait = findViewById(R.id.btn_wait);
+        setContentView(getLayoutId());
+        if (findViewById(R.id.textView1) != null)
+            tv = findViewById(R.id.textView1);
+
+        if (findViewById(R.id.btn_wait) != null)
+            btn_wait = findViewById(R.id.btn_wait);
+
         //获取按钮控件并设置点击侦听
         mBtnCapture = findViewById(R.id.btn_capture);
         mBtnCapture.setOnClickListener(this);
@@ -88,24 +91,28 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
         mMsgHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if(msg.what == IDef.Msg_Tick) {
+                if (msg.what == IDef.Msg_Tick) {
                     mCounter++;
-                    if(mCounter >= Timeout) {
+                    if (mCounter >= Timeout) {
                         timerTimeout();
                     }
                 }
-                if(msg.what == IDef.Msg_Recognized_Finished) {
+                if (msg.what == IDef.Msg_Recognized_Finished) {
                     recognizedFinished(msg.getData());
                 }
             }
         };
     }
 
+    public int getLayoutId() {
+        return R.layout.activity_carorccapture;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==PermissionUtils.CODE_REQUEST_PERMISSION){
-            if(PermissionUtils.HavecheckPermission(CarORCCaptureActivity.this)){
+        if (requestCode == PermissionUtils.CODE_REQUEST_PERMISSION) {
+            if (PermissionUtils.HavecheckPermission(CarORCCaptureActivity.this)) {
                 //初始化照相机
                 openCamera();
                 startPreview();
@@ -121,7 +128,7 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
         stopTimer();
 
         //停止预览，释放资源
-        if(this.mCamera != null) {
+        if (this.mCamera != null) {
             this.mCamera.stopPreview();
             this.mCamera.release();
             this.mCamera = null;
@@ -132,13 +139,16 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {}
+    public void surfaceDestroyed(SurfaceHolder holder) {
+    }
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
     }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if(PermissionUtils.checkPermission(this)){
+        if (PermissionUtils.checkPermission(this)) {
             //初始化照相机
             openCamera();
             startPreview();
@@ -161,9 +171,6 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
             params.setPictureFormat(ImageFormat.JPEG);
             params.setPreviewSize(Desired_Preview_Width, Desired_Preview_Height);
             //设置场景
-            //params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            //params.setSceneMode(Camera.Parameters.SCENE_MODE_FIREWORKS);
-            //params.setFocusMode(Parameters.FOCUS_MODE_AUTO);
             params.setPictureSize(Desired_Picture_Width, Desired_Picture_Height);
             //@2015-06-30 兼容性解决方案
             if (Build.VERSION.SDK_INT >= 8) {
@@ -192,16 +199,16 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     private void getSupportedPreviewSize(Camera.Parameters params) {
 
         List<Camera.Size> sizes = params.getSupportedPreviewSizes();
-        Comparator<Camera.Size> comparator = new Comparator<Camera.Size> () {
+        Comparator<Camera.Size> comparator = new Comparator<Camera.Size>() {
 
             @Override
             public int compare(Camera.Size arg1, Camera.Size arg2) {
 
                 //倒序
-                if(arg2.width > arg1.width) {
+                if (arg2.width > arg1.width) {
                     return (1);
-                } else if(arg2.width == arg1.width) {
-                    if(arg2.height > arg1.height) {
+                } else if (arg2.width == arg1.width) {
+                    if (arg2.height > arg1.height) {
                         return (1);
                     } else if (arg2.height == arg1.height) {
                         return (0);
@@ -216,46 +223,38 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
         };
         Collections.sort(sizes, comparator);
 
-        StringBuffer sb  = new StringBuffer();
         boolean isGot = false;
-        for(int i = 0; i < sizes.size(); ++i) {
+        for (int i = 0; i < sizes.size(); ++i) {
 
             Camera.Size tSize = sizes.get(i);
-
-            sb.append("(");
-            sb.append(tSize.width);
-            sb.append(",");
-            sb.append(tSize.height);
-            sb.append(") ");
-
-            if( (tSize.width == Desired_Preview_Width) && !isGot) { //1280x
+            if ((tSize.width == Desired_Preview_Width) && !isGot) { //1280x
                 Desired_Preview_Height = tSize.height;
                 isGot = true;
-            };
+            }
+            ;
         }
-        if(isGot == false) { //没有匹配上
-            Camera.Size tSize = sizes.get(sizes.size()/2);
+        if (isGot == false) { //没有匹配上
+            Camera.Size tSize = sizes.get(sizes.size() / 2);
             Desired_Preview_Width = tSize.width;
             Desired_Preview_Height = tSize.height;
         }
 
-        Logger.getLogger(IDef.App_Tag).info("SupportedPreviewSizes="+sb.toString() );
     }
 
     //获取支持的图片大小
     private void getSupportedPictureSize(Camera.Parameters params) {
 
         List<Camera.Size> sizes = params.getSupportedPictureSizes();
-        Comparator<Camera.Size> comparator = new Comparator<Camera.Size> () {
+        Comparator<Camera.Size> comparator = new Comparator<Camera.Size>() {
 
             @Override
             public int compare(Camera.Size arg1, Camera.Size arg2) {
 
                 //倒序
-                if(arg2.width > arg1.width) {
+                if (arg2.width > arg1.width) {
                     return (1);
-                } else if(arg2.width == arg1.width) {
-                    if(arg2.height > arg1.height) {
+                } else if (arg2.width == arg1.width) {
+                    if (arg2.height > arg1.height) {
                         return (1);
                     } else if (arg2.height == arg1.height) {
                         return (0);
@@ -270,9 +269,9 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
         };
         Collections.sort(sizes, comparator);
 
-        StringBuffer sb  = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         boolean isGot = false;
-        for(int i = 0; i < sizes.size(); ++i) {
+        for (int i = 0; i < sizes.size(); ++i) {
 
             Camera.Size tSize = sizes.get(i);
 
@@ -282,18 +281,17 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
             sb.append(tSize.height);
             sb.append(") ");
 
-            if((tSize.width == Desired_Picture_Width) && !isGot) { //1280x
+            if ((tSize.width == Desired_Picture_Width) && !isGot) { //1280x
                 Desired_Picture_Height = tSize.height;
                 isGot = true;
             }
         }
-        if(isGot == false) { //没有匹配上
-            Camera.Size tSize = sizes.get(sizes.size()/2);
+        if (isGot == false) { //没有匹配上
+            Camera.Size tSize = sizes.get(sizes.size() / 2);
             Desired_Picture_Width = tSize.width;
             Desired_Picture_Height = tSize.height;
         }
 
-        Logger.getLogger(IDef.App_Tag).info("SupportedPictureSizes="+sb.toString() );
     }
 
     private void closeCamera() {
@@ -322,12 +320,10 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onAutoFocus(boolean success, Camera camera) {
-        if(success) {
+        if (success) {
 
             //停止聚焦超时计时器
             stopTimer();
-
-            Logger.getLogger(IDef.App_Tag).log(Level.FINE, "Camera autofocus OK");
 
             //startPreview();
             camera.cancelAutoFocus();//只有加上了这一句，才会自动对焦。
@@ -338,14 +334,14 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        if(this.mCamera != null) {
+        if (this.mCamera != null) {
 
             //startPreview();
             this.mCamera.autoFocus(this);
             //隐藏按钮
             mBtnCapture.setVisibility(View.INVISIBLE);
             btn_wait.setVisibility(View.VISIBLE);
-            tv.setText("采集车牌信息，请持稳设备...");
+            StartScaning("采集车牌信息，请持稳设备...");
             //启动超时计时器
             startTimer();
         }
@@ -354,13 +350,14 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     /**
      * 相机拍照声音
      */
-    private MediaPlayer shootMP =null;
-    public void shootSound()
-    {AudioManager meng = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int volume = meng.getStreamVolume( AudioManager.STREAM_NOTIFICATION);
-        if (volume != 0)
-        {if (shootMP ==null )
-            shootMP = MediaPlayer.create(this, Uri.parse("file:///system/media/audio/ui/camera_click.ogg"));
+    private MediaPlayer shootMP = null;
+
+    public void shootSound() {
+        AudioManager meng = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int volume = meng.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        if (volume != 0) {
+            if (shootMP == null)
+                shootMP = MediaPlayer.create(this, Uri.parse("file:///system/media/audio/ui/camera_click.ogg"));
             if (shootMP != null)
                 shootMP.start();
         }
@@ -369,17 +366,19 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     /**
      * 相机拍照声音
      */
-    private MediaPlayer camera_focus =null;
-    public void focusSound()
-    {AudioManager meng = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int volume = meng.getStreamVolume( AudioManager.STREAM_NOTIFICATION);
-        if (volume != 0)
-        {if (camera_focus ==null )
-            camera_focus = MediaPlayer.create(this, Uri.parse("file:///system/media/audio/ui/camera_focus.ogg"));
+    private MediaPlayer camera_focus = null;
+
+    public void focusSound() {
+        AudioManager meng = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int volume = meng.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        if (volume != 0) {
+            if (camera_focus == null)
+                camera_focus = MediaPlayer.create(this, Uri.parse("file:///system/media/audio/ui/camera_focus.ogg"));
             if (camera_focus != null)
                 camera_focus.start();
         }
     }
+
     //自动对焦超时计时器开始计时
     private void startTimer() {
         focusSound();
@@ -399,7 +398,7 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     //停止聚焦超时计时器
     private void stopTimer() {
         //取消超时计时
-        if(this.mTimer != null) {
+        if (this.mTimer != null) {
             this.mTimer.cancel();
             this.mTimer.purge();
             this.mTimer = null;
@@ -414,8 +413,8 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        final String filePath = IDef.App_Dir+
-                FooSysUtil.getInstance().getTimeStr("")+".jpg";
+        final String filePath = IDef.App_Dir +
+                FooSysUtil.getInstance().getTimeStr("") + ".jpg";
         File f = new File(filePath);
         try {
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
@@ -425,13 +424,48 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
             //拍完照之后会停止预览，需要恢复预览
             //startPreview();
             returnResult(filePath);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void returnResult(String filePath) {
-            if(filePath!=null) {
-                startRecognize(filePath);
-            }
+        if (filePath != null) {
+            startRecognize(filePath);
+        }
+    }
+
+    private String ScanResutl = null;
+
+    public String getScanResutl() {
+        return ScanResutl;
+    }
+
+    /**
+     * 开始进行拍照解析
+     *
+     * @param msg
+     */
+    protected void StartScaning(String msg) {
+        if (btn_wait != null)
+            tv.setText(msg);
+    }
+
+    /**
+     * 拍照解析结束
+     *
+     * @param iSsuccess
+     * @param msg
+     * @param result
+     */
+    protected void Scanfinished(boolean iSsuccess, String msg, String result) {
+        if (iSsuccess) {
+            if (btn_wait != null)
+                tv.setText(result);
+        } else {
+            if (btn_wait != null)
+                tv.setText(msg);
+        }
     }
 
     //识别结束
@@ -440,30 +474,33 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
         mBtnCapture.setVisibility(View.VISIBLE);
         btn_wait.setVisibility(View.GONE);
         startPreview();
-        if(bundle == null) {
-            tv.setText("识别失败，请再试");
+        if (bundle == null) {
+            ScanResutl = null;
+            Scanfinished(false, "识别失败，请再试", ScanResutl);
             return;
         }
 
         String result = bundle.getString(IDef.Extra_Recog_Result);
-        if(result == null) {
-            tv.setText("识别失败，请再试");
+        if (result == null) {
+            ScanResutl = null;
+            Scanfinished(false, "识别失败，请再试", ScanResutl);
             return;
         }
 
         String arr[] = result.split("룺");
-        if (arr != null&& arr.length == 2 && arr[1] != null){
-            tv.setText(arr[1]);
-        }else{
-            tv.setText(result);
+        if (arr != null && arr.length == 2 && arr[1] != null) {
+            ScanResutl = arr[1];
+            Scanfinished(true, "识别成功", ScanResutl);
+        } else {
+            ScanResutl = result;
+            Scanfinished(true, "识别成功", ScanResutl);
         }
     }
 
     //开始识别
     private void startRecognize(String filePath) {
         // TODO Auto-generated method stub
-        //Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-        tv.setText("正在识别，请稍候……");
+        //tv.setText("正在识别，请稍候……");
         RecognizeThread t = new RecognizeThread(this.mMsgHandler, filePath);
         t.start();
     }
@@ -472,22 +509,21 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
     protected void timerTimeout() {
         //停止聚焦超时计时器
         stopTimer();
-        if(this.mCamera != null) {
+        if (this.mCamera != null) {
             this.mCamera.cancelAutoFocus();//只有加上了这一句，才会自动对焦。
             //camera.autoFocus(null);
             this.mCamera.takePicture(null, null, this);
         }
     }
-
     /**
      * //初始化车牌识别SDK
      */
-    protected void initCarORCAPI(){
+    protected void initCarORCAPI() {
         //设置包名
         FreePlatePackage.FreePlatePackageName = "com.wintone.plateid.free"; //getPackageName();
         //初始化车牌识别SDK，包名必须保证为：com.wintone.plateid.free
         TH_PlateIDCfg cfg = new TH_PlateIDCfg();
         Object obj = new Package();
-        int result = PlateIDAPI.TH_InitPlateIDSDK(cfg, (Package)obj);
+        int result = PlateIDAPI.TH_InitPlateIDSDK(cfg, (Package) obj);
     }
 }
