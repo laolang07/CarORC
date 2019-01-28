@@ -5,14 +5,11 @@
 ### 2. 识别速度快，极致优化的车牌定位和识别算法;
 ### 3. 使用起来非常方便直接继承lib中的CarORCCaptureActivity
 **【重要】**需要在activity onCreate之前进行API初始化，不然识别会出现错误
-
-
-` 
-   
-    /**
-     * 重要初始化API
-     */
-public class CarORCTestActivity extends CarORCCaptureActivity {
+ 
+ 
+ ` 
+    public class CarORCTestActivity extends CarORCCaptureActivity {
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initCarORCAPI();//初始化API
