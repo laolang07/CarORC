@@ -7,7 +7,10 @@
 **【重要】**需要在activity onCreate之前进行API初始化，不然识别会出现错误
 
 
-`    
+` 
+    /**
+     * 重要初始化API
+     */
 public class CarORCTestActivity extends CarORCCaptureActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
