@@ -79,8 +79,10 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
             btn_wait = findViewById(R.id.btn_wait);
 
         //获取按钮控件并设置点击侦听
-        mBtnCapture = findViewById(R.id.btn_capture);
-        mBtnCapture.setOnClickListener(this);
+        if (findViewById(R.id.btn_capture) != null) {
+            mBtnCapture = findViewById(R.id.btn_capture);
+            mBtnCapture.setOnClickListener(this);
+        }
         //获取视频渲染视图
         this.mVideoView = findViewById(R.id.preview_view);
         this.mHolder = this.mVideoView.getHolder();
@@ -334,13 +336,24 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        if (this.mCamera != null) {
+        if (v.getId() == R.id.btn_capture) {
+            TakePhoto();
+        }
+    }
 
+    /**
+     * 进行拍照
+     */
+    protected void TakePhoto() {
+        if (this.mCamera != null) {
             //startPreview();
             this.mCamera.autoFocus(this);
             //隐藏按钮
-            mBtnCapture.setVisibility(View.INVISIBLE);
-            btn_wait.setVisibility(View.VISIBLE);
+            if (mBtnCapture != null)
+                mBtnCapture.setVisibility(View.INVISIBLE);
+
+            if (btn_wait != null)
+                btn_wait.setVisibility(View.VISIBLE);
             StartScaning("采集车牌信息，请持稳设备...");
             //启动超时计时器
             startTimer();
@@ -447,7 +460,7 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
      * @param msg
      */
     protected void StartScaning(String msg) {
-        if (btn_wait != null)
+        if (tv != null)
             tv.setText(msg);
     }
 
@@ -460,19 +473,20 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
      */
     protected void Scanfinished(boolean iSsuccess, String msg, String result) {
         if (iSsuccess) {
-            if (btn_wait != null)
+            if (tv != null)
                 tv.setText(result);
         } else {
-            if (btn_wait != null)
+            if (tv != null)
                 tv.setText(msg);
         }
     }
 
     //识别结束
     protected void recognizedFinished(Bundle bundle) {
-
-        mBtnCapture.setVisibility(View.VISIBLE);
-        btn_wait.setVisibility(View.GONE);
+        if (mBtnCapture != null)
+            mBtnCapture.setVisibility(View.VISIBLE);
+        if (btn_wait != null)
+            btn_wait.setVisibility(View.GONE);
         startPreview();
         if (bundle == null) {
             ScanResutl = null;
@@ -515,6 +529,7 @@ public class CarORCCaptureActivity extends AppCompatActivity implements View.OnC
             this.mCamera.takePicture(null, null, this);
         }
     }
+
     /**
      * //初始化车牌识别SDK
      */
