@@ -15,6 +15,7 @@
         initCarORCAPI();//初始化API
         super.onCreate(savedInstanceState);
     }
+    
     /**
      * 如果进行重新布局注意SurfaceViewID和com.laolang.libcarorc.ViewfinderViewID必须和原布局保持一致，其余根据实际功能需求使用
      * @return
@@ -23,6 +24,7 @@
     public int getLayoutId() {
         return R.layout.activity_carorccapture;
     }
+    
     /**
      * 开始采集图片进行解析
      * @param msg
